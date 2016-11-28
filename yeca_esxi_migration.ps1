@@ -1,5 +1,6 @@
 ﻿#Migrate ESXI Networking settings between hosts
-#Nick Shores - 11/11/16
+#Nick Shores - 11/12/16
+#new line
 #tested on ESXI 6.0 and 5.5 
 $ErrorActionPreference = 'continue'
 

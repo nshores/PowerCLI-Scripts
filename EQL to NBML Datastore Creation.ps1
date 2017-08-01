@@ -15,7 +15,7 @@ $eqlmgmt = 192.168.0.81
 Import-Module -Name 'C:\Program Files\EqualLogic\bin\EqlPSTools.dll'
 import-module -Name 'NimblePowerShellToolKit'
 
-#Connect to depencies
+#Connect to dependencies
 connect-viserver -server $vcenter -User $vcenteruser -Password $vcenterpass
 Connect-Eqlgroup -GroupAddress $eqlmgmt -Credential $EqlCred
 Connect-NSGroup -group $nimblemgmt -credential $NimbleCred

@@ -8,6 +8,8 @@ $vcenteruser = yourusername
 $vcenterpass = your vcenter password
 $EqlCred = Get-Credential
 $NimbleCred = Get-Credential
+$nimblemgmt = 192.168.0.66
+$eqlmgmt = 192.168.0.81
 
 #Import Modules
 Import-Module -Name 'C:\Program Files\EqualLogic\bin\EqlPSTools.dll'
@@ -15,8 +17,8 @@ import-module -Name 'NimblePowerShellToolKit'
 
 #Connect to depencies
 connect-viserver -server $vcenter -User $vcenteruser -Password $vcenterpass
-Connect-Eqlgroup -GroupAddress 192.168.0.81 -Credential $EqlCred
-Connect-NSGroup -group 192.168.0.66 -credential $NimbleCred
+Connect-Eqlgroup -GroupAddress $eqlmgmt -Credential $EqlCred
+Connect-NSGroup -group $nimblemgmt -credential $NimbleCred
 
 
 #Get list of EQL Volumes to create 

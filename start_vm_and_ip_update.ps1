@@ -40,19 +40,18 @@ sleep 10
 #Answer VM questions
 Get-VMQuestion | Set-VMQuestion -Option button.no -Confirm:$y 
 
-#TODO - Remove ? / Initalzie variable for checking VMWare tools status on powered on VM's
-$vmtools = get-vm | where-object {$_.PowerState -eq "PoweredOn"} | % { get-view $_.ID } | where-object { ($_.guest.toolsstatus -match ".*Not.*") }
-
-#TODO Add a IF statement below to break if null to stop a pointless loop
-while ($vmtools -ne $null) {
-    $vmtools = get-vm | where-object {$_.PowerState -eq "PoweredOn"} | % { get-view $_.ID } | where-object { ($_.guest.toolsstatus -match ".*Not.*") }
+#Wait for VMWare Tools 
+do {
+    $vmtools = get-vm | where-object {$_.PowerState -eq "PoweredOn"} |
+        foreach-object {get-view $_.ID} | where-object {$_.guest.toolsstatus -ne "toolsOK"}
     $nametext = $vmtools.name
-    write-host "waiting for  tools to start on the following machines `n $nametext"
-    sleep 10
+    if($vmtools -and $nametext) {
+        clear-host
+        write-host "Waiting for tools to start on the following machines:`n$nametext"
+        sleep 10 
     }
-
-
-
+    
+} while($vmtools -and $nametext)
 
 #Update IP's on VM's based on values in csv
 

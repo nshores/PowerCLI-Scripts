@@ -10,7 +10,7 @@ Example CSV Format -
 Parent,MacAddress,IP,MASK,DNS1,DNS2,GATEWAY
 NorthConf,00:50:56:99:66:d3,192.168.0.185,255.255.255.0,192.168.0.7,192.168.0.8,192.168.0.1
 
-Tested against ESXI 6.5 and Windows Server 2008 R2/Windows 7
+Tested against ESXI 6.5 and Windows Server 2008 R2/Windows 7. PowerCLI 6.3 was used at time of creation. 
 Nick Shores
 8-22-17
 #>

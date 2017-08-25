@@ -10,26 +10,32 @@ Example CSV Format -
 Parent,MacAddress,IP,MASK,DNS1,DNS2,GATEWAY
 NorthConf,00:50:56:99:66:d3,192.168.0.185,255.255.255.0,192.168.0.7,192.168.0.8,192.168.0.1
 
-Tested against ESXI 6.5 and Windows Server 2008 R2/Windows 7. PowerCLI 6.3 was used at time of creation. 
+Tested against ESXI 6.5 and Windows Server 2008 R2/Windows 7. 
+PowerCLI 6.5.1 needed.
 Nick Shores
 8-22-17
 #>
 
 #Insert your vCenter/ESXI host below
 connect-viserver 10.1.101.18 
-$iplist = import-csv C:\path\to\CSV.csv
-$guestuser = "domainadmin"
-$guestpassword = "domainadminpassword"
+#Point this towards your CSV with the list of machine's and associated ip's
+$iplist = import-csv C:\Users\nsadmin\Desktop\rgamactoname.csv
+#Insert a local administrator account here
+$guestuser = "localadmin"
+#Insert a local administrator password here
+$guestpassword = "localadminpassword"
 
 
 #VM POWER ON AND VMWARE TOOLS WAIT
 
 $vmguests = get-vm 
 
-#Start Each VM
+#Start Each VM - Answer VM question 
 foreach ($vm in $vmguests) {
     write-host "Starting $vm"
     Start-VM -vm $vm | out-null
+    sleep 2
+    get-vm $vm | Get-VMQuestion | Set-VMQuestion -Option button.no -Confirm: $false 
 
 }
 
@@ -37,13 +43,11 @@ foreach ($vm in $vmguests) {
 #Wait for VM's to turn on 
 sleep 10
 
-#Answer VM questions
-Get-VMQuestion | Set-VMQuestion -Option button.no -Confirm:$y 
 
-#Wait for VMWare Tools 
+
 do {
     $vmtools = get-vm | where-object {$_.PowerState -eq "PoweredOn"} |
-        foreach-object {get-view $_.ID} | where-object {$_.guest.toolsstatus -ne "toolsOK"}
+        foreach-object {get-view $_.ID} | where-object {$_.guest.toolsstatus -match "Not"}
     $nametext = $vmtools.name
     if($vmtools -and $nametext) {
         clear-host
@@ -52,6 +56,8 @@ do {
     }
     
 } while($vmtools -and $nametext)
+
+
 
 #Update IP's on VM's based on values in csv
 
@@ -70,4 +76,8 @@ foreach ($machine in $iplist){
     get-vm $machine.Parent | Invoke-VMScript -GuestUser $guestuser -GuestPassword $guestpassword -ScriptText $dns1 -ScriptType Bat
     get-vm $machine.Parent | Invoke-VMScript -GuestUser $guestuser -GuestPassword $guestpassword -ScriptText $dns2 -ScriptType Bat
     }
+
+
+
+
 
